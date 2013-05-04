@@ -4,7 +4,7 @@ We've been talking about responsive images for years now, but what is
 the actual cost of delivering non-responsive images to narrow viewports?
 How many bytes are we sending for nothing?
 
-(@grigs)[https://github.com/grigs] wrote a [blog post](http://blog.cloudfour.com/sensible-jumps-in-responsive-image-file-sizes) on responsive images breakpoints and their
+[@grigs](https://github.com/grigs) wrote a (blog post)[http://blog.cloudfour.com/sensible-jumps-in-responsive-image-file-sizes] on responsive images breakpoints and their
 relation to a site's performance budget, which got me thinking: "We cannot manage a budget if we cannot measure costs".
 
 So, I wrote this small script that measures a certain site in multiple
