@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+# The script's inputs
+URL=$1
+WIDTH=$2
+HEIGHT=$3
+VIEWPORT_WIDTH=$4
+VIEWPORT_HEIGHT=$5
+
+# Consts
+ORIGINAL=`echo $URL | sed 's-[:/]-_-g'`
+RESIZED=$WIDTH"x"$HEIGHT"_"$ORIGINAL
+
+# Get a file's size
+size(){
+    stat -c%s $1
+}
+
+# Fetch the image
+if [ ! -f $ORIGINAL ]
+then
+    curl -sL $URL > $ORIGINAL
+fi
+
+# Resize it to its viewed size
+convert $ORIGINAL -geometry $((WIDTH))x$((HEIGHT)) $RESIZED
+
+# Losslessly optimize the output
+image_optim $RESIZED 2>/dev/null >/dev/null
+ORIGINAL_SIZE=`size $ORIGINAL`
+
+# Get the original image dimensions
+ORIGINAL_DIM=`identify -format "%w,%h" "$ORIGINAL"|sed 's/,/x/'`
+
+# Losslessly optimize the original image
+cp $ORIGINAL optim_$ORIGINAL
+image_optim optim_$ORIGINAL 2>/dev/null >/dev/null
+OPTIM_ORIGINAL_SIZE=`size optim_$ORIGINAL`
+RESIZED_SIZE=`size $RESIZED`
+
+if (( $RESIZED_SIZE > $OPTIM_ORIGINAL_SIZE ))
+then
+    RESIZED_SIZE=$OPTIM_ORIGINAL_SIZE
+fi
+
+if (( $WIDTH == 0 ))
+then
+    RESIZED_SIZE=0
+fi
+
+echo "$URL optimize_savings: "$(($ORIGINAL_SIZE - $OPTIM_ORIGINAL_SIZE))" optimize_and_"$ORIGINAL_DIM"=>"$((WIDTH))x$((HEIGHT)) " "$(($ORIGINAL_SIZE - $RESIZED_SIZE))
