@@ -7,8 +7,12 @@ HEIGHT=$3
 VIEWPORT_WIDTH=$4
 VIEWPORT_HEIGHT=$5
 
+# imports
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $DIR/slug.sh
+
 # Consts
-ORIGINAL=`echo $URL | sed 's-[:/]-_-g'`
+ORIGINAL=`slug "$URL"`
 RESIZED=$WIDTH"x"$HEIGHT"_"$ORIGINAL
 
 # Get a file's size
@@ -20,6 +24,13 @@ size(){
 if [ ! -f $ORIGINAL ]
 then
     curl -sL $URL > $ORIGINAL
+fi
+
+IS_IMAGE=`file $ORIGINAL | egrep "JPEG|PNG|GIF" | wc -l`
+
+if (( $IS_IMAGE == 0 ))
+then
+   exit 1 
 fi
 
 # Resize it to its viewed size
