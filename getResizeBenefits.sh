@@ -12,7 +12,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $DIR/slug.sh
 
 # Consts
-ORIGINAL=`slug "$URL"`
+ORIGINAL=`slug "$URL"|cut -c1-127`
 RESIZED=$WIDTH"x"$HEIGHT"_"$ORIGINAL
 
 # Get a file's size
@@ -26,7 +26,7 @@ then
     curl -sL $URL > $ORIGINAL
 fi
 
-IS_IMAGE=`file $ORIGINAL | egrep "JPEG|PNG|GIF" | wc -l`
+IS_IMAGE=`file "$ORIGINAL" | egrep "JPEG|PNG|GIF" | wc -l`
 
 if (( $IS_IMAGE == 0 ))
 then
