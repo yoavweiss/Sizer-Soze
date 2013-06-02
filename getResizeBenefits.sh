@@ -17,7 +17,7 @@ RESIZED=$WIDTH"x"$HEIGHT"_"$ORIGINAL
 
 # Get a file's size
 size(){
-    stat -c%s $1
+    ls -l $1 | awk '{print $5}'
 }
 
 # Fetch the image
