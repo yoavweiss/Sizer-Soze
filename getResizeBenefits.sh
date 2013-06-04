@@ -23,7 +23,7 @@ size(){
 # Fetch the image
 if [ ! -f $ORIGINAL ]
 then
-    curl -sL $URL > $ORIGINAL
+    curl -sL "$URL" > $ORIGINAL 2> /dev/null
 fi
 
 IS_IMAGE=`file "$ORIGINAL" | egrep "JPEG|PNG|GIF" | wc -l`
@@ -59,4 +59,4 @@ then
     RESIZED_SIZE=0
 fi
 
-echo "$URL optimize_savings: "$(($ORIGINAL_SIZE - $OPTIM_ORIGINAL_SIZE))" optimize_and_"$ORIGINAL_DIM"=>"$((WIDTH))x$((HEIGHT)) " "$(($ORIGINAL_SIZE - $RESIZED_SIZE))
+echo "$ORIGINAL optimize_savings: "$(($ORIGINAL_SIZE - $OPTIM_ORIGINAL_SIZE))" optimize_and_"$ORIGINAL_DIM"=>"$((WIDTH))x$((HEIGHT)) " "$(($ORIGINAL_SIZE - $RESIZED_SIZE))

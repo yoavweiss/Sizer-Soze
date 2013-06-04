@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 URL=$1
+if [[ "$URL" != "http(s|)://*" ]]
+then
+    URL="http://"$URL
+fi
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $DIR/slug.sh
 SLUG=`slug "$URL"`
@@ -8,6 +12,7 @@ cd /tmp/$SLUG
 
 for s in 360 480 640 760 920 1260
 do
+    echo -n $URL" "
     $DIR/getImageDimensions.js $URL $s | 
         awk '{system("'$DIR'/getResizeBenefits.sh \""$1"\" "$2" "$3" "'$s'" "'$s')}' | 
         tee /tmp/$SLUG/results_$s.txt  |
