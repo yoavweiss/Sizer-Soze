@@ -20,20 +20,36 @@ if(system.args.length > 3){
 page.viewportSize = {width: viewportWidth, height: viewportHeight};
 page.onError = function (msg, trace) {console.log("ERROR:"+msg);}
 
-// Open the URL
-page.open(url, function(status){
-    // Return an array of "imgURL width height" strings
-    var imageDimensions = page.evaluate(function(){
+var getImageDimensions = function(){
+    return page.evaluate(function(){
         var images = document.querySelectorAll('img');
-        var ret=[];
+        var ret={};
         for(var i = 0; i < images.length; i++){
             var img = images[i];
-            ret[i] = img.src + " " + img.clientWidth + " " + img.clientHeight;
+            ret[img.src] = [img.clientWidth , img.clientHeight];
         }
         return ret;
     });
-    // Print the dimensions to the console
-    imageDimensions && imageDimensions.forEach(function(val){console.log(val)});
-
-    phantom.exit(0);
+};
+// Open the URL
+page.open(url, function(status){
+    var counter = 0;
+    var finalDimensions={};
+    setInterval(function(){
+        // Return an array of "imgURL width height" strings
+        var imageDimensions = getImageDimensions();
+        var noneSet = true;
+        Object.keys(imageDimensions).forEach(function(key){
+            if(!finalDimensions[key] || finalDimensions[key][0] == 0){
+                finalDimensions[key] = imageDimensions[key];
+                noneSet = false;
+            }
+        });
+        counter++;
+        if(counter >= 50 || noneSet){
+            // Print the dimensions to the console
+            Object.keys(finalDimensions).forEach(function(val){console.log(val + " " + finalDimensions[val][0] + " " + finalDimensions[val][1])});
+            phantom.exit(0);
+        }
+    }, 500);
 });
