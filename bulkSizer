@@ -1,4 +1,7 @@
 #!/bin/bash
 URLS_FILE=$1
 
-cat $URLS_FILE | sed 's_http://__;s_/__g'| xargs -I{} -P64 -n1 bash -c "./sizer {} >> /tmp/sizer_results_{}.txt"
+cat $URLS_FILE | 
+    sed 's_http://__'| 
+    xargs -I{} -P64 -n1 bash -c "mkdir -p /tmp/{} && ./sizer {} >> /tmp/{}/sizer_results.txt" 
+
