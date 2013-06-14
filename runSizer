@@ -1,0 +1,5 @@
+#!/bin/bash
+
+DIR=`./slug.py $1` 
+mkdir -p $DIR 
+./sizer.py $1 >> $DIR"/sizer_results.txt" 

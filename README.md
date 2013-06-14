@@ -1,19 +1,17 @@
-# What is the cost of your non-responsive images?
+# How much image-data are you sending your users for nothing?
 
 We've been talking about responsive images for years now, but what is
 the actual cost of delivering non-responsive images to narrow viewports?
-How many bytes are we sending for nothing?
+How many bytes are wasted on the wire(less)?
 
-[@grigs](https://github.com/grigs) wrote a [blog post](http://blog.cloudfour.com/sensible-jumps-in-responsive-image-file-sizes) on responsive images breakpoints and their
-relation to a site's performance budget, which got me thinking: "We cannot manage a budget if we cannot measure costs".
-
-So, I wrote this small script that measures a certain site in multiple
-viewports and outputs the bytes we can optimize losslessly and the bytes
-we can optimize if we'd tailor the images to this specific viewport.
+This script enables to evaluate possible savings by properly resizing
+images for various viewports, with the ultimate goal of enabling fitting
+of responsive images into a performance budget.
 
 ## Usage
 
-`./sizer <URL>`
+`./sizer.py <URL>`
+`./bulkSizer <Text file with URLs>`
 
 # Results
 
@@ -24,28 +22,34 @@ stored there, as well as result logs per viewport.
 
 ## Dependencies
 
-* image_optim
-* ImageMagick
-* curl
-* PhantomJS
+* [Python](http://www.python.org/)
+* [PhantomJS](http://phantomjs.org/)
+* [image_optim](https://github.com/toy/image_optim) (A CLI version of
+  [ImageOptim](https://github.com/pornel/ImageOptim))
+* [ImageMagick](http://www.imagemagick.org/script/index.php)
+* [python-slugify](https://github.com/un33k/python-slugify)
+* [python-magic](https://github.com/ahupp/python-magic)
+
+## How to install
+If you're on Ubuntu/Debian, run `ubuntu_install.sh`. 
+If you're on OSX/Other-linux, install the dependencies projects and you should be
+good to go.
+If you're on Windows, Install Ubuntu :P
 
 ## How it works
 
-* `run.sh` simply iterates over 2 other scripts with several viewport
-  sizes. Adding more viewports is simple, but it slows down the
-running time.
 * `getImageDimensions.js` is a phantomjs script that downloads the
   requested URL, and outputs all of its content images as well as their
 dimensions.
-* `getResizedBenefits.sh` is a bash script that gets the results of
-  `getImageDimensions.js`, downloads the original images and resizes
-these images to see what their resized size is. It also optimizes the
+* `downloadr.py` downloads the image resources.
+* `resizeBenefits.py` gets the results of
+  `getImageDimensions.js`, and resizes
+the images to see what their resized size is. It also optimizes the
 original images using image_optim, to see how much lossless optimization
 can get us.
-
-## Why bash???
-
-I was aiming to minimize dependencies, so I went with bash. 
+* `sizer.py` iterates over the other scripts with several viewport
+  sizes. Adding more viewports is simple, but it slows down the
+running time.
 
 ## What's with the name????
 

@@ -6,7 +6,7 @@ var page = require('webpage').create(),
     viewportWidth,
     viewportHeight;
 if(system.args.length < 3){
-    console.log('Usage: ' + system.args[0] + ' <URL> <Viewport width in px> <optional viewport height>');
+    console.error('Usage: ' + system.args[0] + ' <URL> <Viewport width in px> <optional viewport height>');
     phantom.exit()
 }
 url = system.args[1];
@@ -18,7 +18,7 @@ if(system.args.length > 3){
 
 // Set the page's viewport
 page.viewportSize = {width: viewportWidth, height: viewportHeight};
-page.onError = function (msg, trace) {console.log("ERROR:"+msg);}
+page.onError = function (msg, trace) {console.error("ERROR:"+msg);}
 
 var getImageDimensions = function(){
     return page.evaluate(function(){
@@ -35,10 +35,16 @@ var getImageDimensions = function(){
 page.open(url, function(status){
     var counter = 0;
     var finalDimensions={};
+
     setInterval(function(){
         // Return an array of "imgURL width height" strings
         var imageDimensions = getImageDimensions();
         var noneSet = true;
+        if(counter == 0){
+            Object.keys(imageDimensions).forEach(function(val){console.log(val)});
+            console.log("---results---");
+        }
+
         Object.keys(imageDimensions).forEach(function(key){
             if(!finalDimensions[key] || finalDimensions[key][0] == 0){
                 finalDimensions[key] = imageDimensions[key];
