@@ -11,8 +11,9 @@ from threading import Thread
 def resourceSlug(url, dir):
     hash = hashlib.md5()
     hash.update(url)
-    slug = hash.hexdigest()[:2] + slugify(url)[:128]
-    return os.path.join(dir, slug)
+    digest = hash.hexdigest()[:2]
+    slug = slugify(url)[:128]
+    return (os.path.join(dir, digest), os.path.join(dir, digest, slug))
 
 class downloaderThread(Thread):
     def __init__(self, queue, dir):
@@ -23,9 +24,11 @@ class downloaderThread(Thread):
     def downloadFile(self, url):
         url = url.strip()
         try: 
-            filename = resourceSlug(url, self.dir)
+            filedir, filename = resourceSlug(url, self.dir)
             if os.path.exists(filename):
                 return
+            if not os.path.exists(filedir):
+                os.mkdir(filedir)
 
             f = urlopen(url)
             buffer = f.read()

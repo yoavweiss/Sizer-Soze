@@ -19,7 +19,7 @@ def getBenefits(results, dir):
     devnull = open(os.devnull, "wb")
     for result in results:
         (url, width, height) = analyzeResult(result)
-        filename = resourceSlug(url, dir)
+        filedir, filename = resourceSlug(url, dir)
         try:
             buffer = open(filename, "rb").read()
         except IOError:
