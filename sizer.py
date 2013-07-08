@@ -23,6 +23,8 @@ class SizerProcess(Process):
             sizer(url, filename)
             self.queue.task_done()
 
+def col(value, length=16):
+    return str(value).ljust(length + 1)
 def sizer(url):
     # Prepare the output directory
     if not url.startswith("http"):
@@ -33,6 +35,7 @@ def sizer(url):
     if not os.path.exists(slugged_dir):
         os.makedirs(slugged_dir)
 
+    print col("url", len(url)), col("viewport"), col("image_data"), col("optimize_savings"), col("resize_savings")
     for viewport in settings.viewports:
         image_urls = []
         image_results = []
@@ -70,7 +73,7 @@ def sizer(url):
             resize_savings += benefit[4]
         benefits_file.close()
 
-        print url, viewport, image_data, optimize_savings, resize_savings
+        print col(url, len(url)), col(viewport), col(image_data), col(optimize_savings), col(resize_savings)
     return 
 
 if __name__ == "__main__":
