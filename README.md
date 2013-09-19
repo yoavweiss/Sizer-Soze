@@ -4,9 +4,8 @@ We've been talking about responsive images for years now, but what is
 the actual cost of delivering non-responsive images to narrow viewports?
 How many bytes are wasted on the wire(less)?
 
-This script enables to evaluate possible savings by properly resizing
-images for various viewports, with the ultimate goal of enabling fitting
-of responsive images into a performance budget.
+This tool evaluates the savings by resizing images to various viewports,
+with the goal of fitting images into a "performance budget".
 
 ## Usage
 
@@ -16,9 +15,9 @@ of responsive images into a performance budget.
 # Results
 
 Besides the summary results printed to screen, you can see detailed
-per-image results in your `/tmp/` directory. Each tested site creates a
-directory there, and the original, optimized and resized images are
-stored there, as well as result logs per viewport.
+per-image results in your `/tmp/` directory. A directory will be created 
+there for each site. The original, optimized, and resized images are
+stored there - as well as result logs per viewport.
 
 ## Dependencies
 
