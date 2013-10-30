@@ -25,7 +25,7 @@ class SizerProcess(Process):
 
 def col(value, length=16):
     return str(value).ljust(length + 1)
-def sizer(url):
+def sizer(url, ignore_invisibles):
     # Prepare the output directory
     if not url.startswith("http"):
         url = "http://" + url
@@ -35,7 +35,7 @@ def sizer(url):
     if not os.path.exists(slugged_dir):
         os.makedirs(slugged_dir)
 
-    print col("url", len(url)), col("viewport"), col("image_data"), col("optimize_savings"), col("resize_savings")
+    print col("url", len(url)), col("viewport"), col("image_data"), col("lossless_savings"), col("lossy_savings"), col("resize_savings")
     for viewport in settings.viewports:
         image_urls = []
         image_results = []
@@ -55,10 +55,11 @@ def sizer(url):
             container.append(line)
 
         # Here the process should be dead, and all files should be downloaded
-        benefits = resizeBenefits.getBenefits(image_results, slugged_dir)
+        benefits = resizeBenefits.getBenefits(image_results, slugged_dir, ignore_invisibles)
         benefits_file = open(os.path.join(slugged_dir, "result_" + str(viewport) + ".txt"), "wt")
         image_data = 0
         optimize_savings = 0
+        lossy_optimize_savings = 0
         resize_savings = 0
         for benefit in benefits:
             print >>benefits_file, benefit[0],
@@ -67,19 +68,25 @@ def sizer(url):
             print >>benefits_file, "optimize_savings:",
             print >>benefits_file, benefit[2],
             print >>benefits_file, benefit[3],
-            print >>benefits_file, benefit[4]
+            print >>benefits_file, benefit[4],
+            print >>benefits_file, benefit[5]
             image_data += benefit[1]
             optimize_savings += benefit[2]
-            resize_savings += benefit[4]
+            lossy_optimize_savings += benefit[3]
+            resize_savings += benefit[5]
         benefits_file.close()
 
-        print col(url, len(url)), col(viewport), col(image_data), col(optimize_savings), col(resize_savings)
+        print col(url, len(url)), col(viewport), col(image_data), col(optimize_savings), col(lossy_optimize_savings), col(resize_savings)
     return 
 
 if __name__ == "__main__":
     # Check input
     if len(sys.argv) <= 1:
-        print >> sys.stderr, "Usage:", sys.argv[0], "<URL>"
+        print >> sys.stderr, "Usage:", sys.argv[0], "<URL> <ignore display:none>"
         quit()
     url = sys.argv[1]
-    sizer(url)
+    if len(sys.argv) > 2:
+        ignore = bool(sys.argv[2])
+    else:
+        ignore = True
+    sizer(url, ignore)

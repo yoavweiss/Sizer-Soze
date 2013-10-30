@@ -14,7 +14,7 @@ def analyzeResult(result):
 def fileSize(name):
     return int(os.stat(name).st_size)
 
-def getBenefits(results, dir):
+def getBenefits(results, dir, ignore_invisibles):
     benefits = []
     devnull = open(os.devnull, "wb")
     for result in results:
@@ -29,14 +29,19 @@ def getBenefits(results, dir):
         # Sorry WebP
         if (ext != "jpeg") and (ext != "png") and (ext != "gif"):
             continue
-        optimized_file_name = filename + "_opt"
-        resized_file_name = filename + "_" + width + "_" + height
+        optimized_file_name = filename + "_lslsopt" + ext
+        lossy_optimized_file_name = filename + "_lossyopt" + ext
+        resized_file_name = filename + "_" + width + "_" + height + ext
         # optimize the original image
         copyfile(filename, optimized_file_name)
         call(["image_optim", optimized_file_name], stdout=devnull, stderr=devnull)
 
+        # Lossy optimize the original image
+        call(["convert", filename, "-quality", "85", lossy_optimized_file_name])
+        call(["image_optim", lossy_optimized_file_name], stdout=devnull, stderr=devnull)
+
         # Resize the original image
-        call(["convert", filename, "-geometry", width+"x"+height, resized_file_name])
+        call(["convert", filename, "-geometry", width+"x"+height, "-quality", "85", resized_file_name])
         call(["image_optim", resized_file_name], stdout=devnull, stderr=devnull)
 
         # Get the original image's dimensions
@@ -44,6 +49,7 @@ def getBenefits(results, dir):
 
         original_size = fileSize(filename)
         optimized_size = fileSize(optimized_file_name)
+        lossy_optimized_size = fileSize(lossy_optimized_file_name)
         resized_size = fileSize(resized_file_name)
 
         # If resizing made the image larger, ignore it
@@ -52,13 +58,18 @@ def getBenefits(results, dir):
 
         # if the image is not displayed, consider all its data as a waste
         if width == 0:
-            resized_size = 0
+            if not ignore_invisibles:
+                resized_size = 0
+            else:
+                resized_size = lossy_optimized_size
 
-        benefits.append([   filename, 
-                            original_size, 
-                            original_size-optimized_size, 
-                            original_dimensions+"=>"+width+"x"+height,
-                            original_size-resized_size])
+
+        benefits.append([   filename,
+                            original_size,
+                            original_size - optimized_size,
+                            original_size - lossy_optimized_size,
+                            original_dimensions + "=>" + width + "x" + height,
+                            original_size - resized_size])
     devnull.close()
     return benefits
 
