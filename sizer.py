@@ -88,5 +88,5 @@ if __name__ == "__main__":
     if len(sys.argv) > 2:
         ignore = bool(sys.argv[2])
     else:
-        ignore = True
+        ignore = False
     sizer(url, ignore)

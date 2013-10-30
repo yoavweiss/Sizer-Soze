@@ -57,12 +57,10 @@ def getBenefits(results, dir, ignore_invisibles):
             resized_size = optimized_size
 
         # if the image is not displayed, consider all its data as a waste
-        if width == 0:
-            if not ignore_invisibles:
-                resized_size = 0
-            else:
-                resized_size = lossy_optimized_size
-
+        if width == "0":
+            resized_size = 0
+            if ignore_invisibles:
+                continue
 
         benefits.append([   filename,
                             original_size,
