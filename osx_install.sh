@@ -1,9 +1,10 @@
 #!/bin/bash
+ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"
 brew update
 brew install python
 brew install phantomjs
 gem install image_optim
 brew install imagemagick
-pip install python-slugify
+sudo pip install python-slugify
 brew install libmagic
-pip install python-magic
+sudo pip install python-magic
