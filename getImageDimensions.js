@@ -52,7 +52,7 @@ page.open(url, function(status){
             }
         });
         counter++;
-        if(counter >= 50 || noneSet){
+        if(counter >= 20 || noneSet){
             // Print the dimensions to the console
             Object.keys(finalDimensions).forEach(function(val){console.log(val + " " + finalDimensions[val][0] + " " + finalDimensions[val][1])});
             phantom.exit(0);

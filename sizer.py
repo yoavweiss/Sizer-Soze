@@ -7,25 +7,11 @@ from subprocess import Popen, PIPE
 from downloadr import downloadFiles
 import resizeBenefits
 import settings
-from threading import Thread
-from multiprocessing import Process
-
-class SizerProcess(Process):
-    def __init__(self, queue):
-        super(SizerProcess, self).__init__()
-        self.queue = queue
-
-    def run(self):
-        while True:
-            print "Started"
-            url,filename = self.queue.get()
-            print "Got"
-            sizer(url, filename)
-            self.queue.task_done()
 
 def col(value, length=16):
     return str(value).ljust(length + 1)
-def sizer(url, ignore_invisibles):
+
+def sizer(url, viewport, ignore_invisibles, toFile):
     # Prepare the output directory
     if not url.startswith("http"):
         url = "http://" + url
@@ -35,33 +21,33 @@ def sizer(url, ignore_invisibles):
     if not os.path.exists(slugged_dir):
         os.makedirs(slugged_dir)
 
-    print col("url", len(url)), col("viewport"), col("image_data"), col("lossless_savings"), col("lossy_savings"), col("resize_savings")
-    for viewport in settings.viewports:
-        image_urls = []
-        image_results = []
-        phantom = Popen([os.path.join(current_dir, "getImageDimensions.js"), url,  str(viewport)],
-                        stdout = PIPE);
-        container = image_urls
-        for line in phantom.stdout.xreadlines():
-            # Ignore data URIs
+    image_urls = []
+    image_results = []
+    phantom = Popen([os.path.join(current_dir, "getImageDimensions.js"), url,  str(viewport)],
+                    stdout = PIPE);
+    container = image_urls
+    for line in phantom.stdout.xreadlines():
+        # Ignore data URIs
 
-            if line.startswith("---"):
-                downloadFiles(image_urls, slugged_dir)
-                container = image_results
-                continue
-            if not line.startswith("http"):
-                continue
+        if line.startswith("---"):
+            downloadFiles(image_urls, slugged_dir)
+            container = image_results
+            continue
+        if not line.startswith("http"):
+            continue
 
-            container.append(line)
+        container.append(line)
 
-        # Here the process should be dead, and all files should be downloaded
-        benefits = resizeBenefits.getBenefits(image_results, slugged_dir, ignore_invisibles)
+    # Here the process should be dead, and all files should be downloaded
+    benefits = resizeBenefits.getBenefits(image_results, slugged_dir, ignore_invisibles)
+    if toFile:
         benefits_file = open(os.path.join(slugged_dir, "result_" + str(viewport) + ".txt"), "wt")
-        image_data = 0
-        optimize_savings = 0
-        lossy_optimize_savings = 0
-        resize_savings = 0
-        for benefit in benefits:
+    image_data = 0
+    optimize_savings = 0
+    lossy_optimize_savings = 0
+    resize_savings = 0
+    for benefit in benefits:
+        if toFile:
             print >>benefits_file, benefit[0],
             print >>benefits_file, "Original_size:",
             print >>benefits_file, benefit[1],
@@ -70,14 +56,18 @@ def sizer(url, ignore_invisibles):
             print >>benefits_file, benefit[3],
             print >>benefits_file, benefit[4],
             print >>benefits_file, benefit[5]
-            image_data += benefit[1]
-            optimize_savings += benefit[2]
-            lossy_optimize_savings += benefit[3]
-            resize_savings += benefit[5]
+        image_data += benefit[1]
+        optimize_savings += benefit[2]
+        lossy_optimize_savings += benefit[3]
+        resize_savings += benefit[5]
+    if toFile:
         benefits_file.close()
 
-        print col(url, len(url)), col(viewport), col(image_data), col(optimize_savings), col(lossy_optimize_savings), col(resize_savings)
-    return 
+    results = { 'summary': {'url': url, 'viewport': viewport, 
+                            'image_data': image_data, 'lossless': optimize_savings, 
+                            'lossy': lossy_optimize_savings, 'resize': resize_savings}, 
+                            'details': benefits }
+    return results
 
 if __name__ == "__main__":
     # Check input
@@ -89,4 +79,14 @@ if __name__ == "__main__":
         ignore = bool(sys.argv[2])
     else:
         ignore = False
-    sizer(url, ignore)
+    print col("url", len(url)), col("viewport"), col("image_data"), col("lossless_savings"), col("lossy_savings"), col("resize_savings")
+    for viewport in settings.viewports:
+        result = sizer(url, viewport, ignore, True)
+        summary = result['summary']
+        url = summary['url']
+        viewport = summary['viewport']
+        image_data = summary['image_data']
+        optimize_savings = summary['lossless']
+        lossy_optimize_savings = summary['lossy']
+        resize_savings = summary['resize']
+        print col(url, len(url)), col(viewport), col(image_data), col(optimize_savings), col(lossy_optimize_savings), col(resize_savings)
