@@ -17,7 +17,7 @@ if __name__ == "__main__":
     postback = sys.argv[4]
 
     result = json.dumps(sizer(url, viewport, ignore, False))
-    if postback.startswith("http"):
+    if not postback.startswith("http"):
         postback = "http://" + postback
     
     requests.post(postback, data=result)
