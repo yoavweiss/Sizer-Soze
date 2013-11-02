@@ -21,4 +21,5 @@ if __name__ == "__main__":
         postback = "http://" + postback
     
     requests.post(postback, data=result)
+    print result
     
