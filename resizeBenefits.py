@@ -37,12 +37,12 @@ def getBenefits(results, dir, ignore_invisibles):
         call(["image_optim", optimized_file_name], stdout=devnull, stderr=devnull)
 
         # Lossy optimize the original image
-        call(["convert", filename, "-quality", "85", lossy_optimized_file_name])
-        call(["image_optim", lossy_optimized_file_name], stdout=devnull, stderr=devnull)
+        call(["convert", optimized_file_name, "-quality", "85", lossy_optimized_file_name])
+        #call(["image_optim", lossy_optimized_file_name], stdout=devnull, stderr=devnull)
 
         # Resize the original image
-        call(["convert", filename, "-geometry", width+"x"+height, "-quality", "85", resized_file_name])
-        call(["image_optim", resized_file_name], stdout=devnull, stderr=devnull)
+        call(["convert", optimized_file_name, "-geometry", width+"x"+height, "-quality", "85", resized_file_name])
+        #call(["image_optim", resized_file_name], stdout=devnull, stderr=devnull)
 
         # Get the original image's dimensions
         original_dimensions = check_output("identify -format \"%w,%h\" " + filename + "|sed 's/,/x/'", shell = True).strip()
