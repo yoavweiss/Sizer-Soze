@@ -30,10 +30,11 @@ stored there - as well as result logs per viewport.
 * [python-magic](https://github.com/ahupp/python-magic)
 
 ## How to install
-If you're on Ubuntu/Debian, run `ubuntu_install.sh`. 
-If you're on OSX/Other-linux, install the dependencies projects and you should be
-good to go.
-If you're on Windows, Install Ubuntu :P
+
+* Ubuntu/Debian run `ubuntu_install.sh`. 
+* OSX run `osx_install.sh`.
+* Other-linux install the dependencies projects and you should be good to go.
+* If you're on Windows, Install Ubuntu :P
 
 ## How it works
 
