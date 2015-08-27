@@ -18,6 +18,7 @@ if(system.args.length > 3){
 
 // Set the page's viewport
 page.viewportSize = {width: viewportWidth, height: viewportHeight};
+page.settings.userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36";
 page.onError = function (msg, trace) {console.error("ERROR:"+msg);}
 
 var getImageDimensions = function(){

@@ -2,7 +2,7 @@
 
 import os
 import sys
-from urllib2 import HTTPError, URLError, urlopen
+from urllib2 import HTTPError, URLError, urlopen, Request
 from slugify import slugify
 import hashlib
 from Queue import Queue
@@ -30,7 +30,8 @@ class downloaderThread(Thread):
             if not os.path.exists(filedir):
                 os.mkdir(filedir)
 
-            f = urlopen(url)
+            headers = { 'User-Agent' : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36' }
+            f = urlopen(Request(url, None, headers))
             buffer = f.read()
             with open(filename, "wb") as local_file:
                 local_file.write(buffer)
